@@ -2,22 +2,29 @@
   <nav class="navbar">
     <div class="container">
       <div class="row">
-        <a href class="navbar-brand">ninja smoothie</a>
-        <a href class="add">
-          <router-link to>+</router-link>
+        <a class="navbar-brand">
+          <router-link :to="{name: 'Index' }">
+            ninja smoothie
+          </router-link>
         </a>
+        <router-link :to="{name: 'AddSmoothie'}">
+          <a class="add">
+            +
+          </a>
+        </router-link>
+
       </div>
     </div>
   </nav>
 </template>
 <script>
 export default {
-  name: 'Navbar',
-  data () {
-    return {}
+  name: "Navbar",
+  data() {
+    return {};
   },
   components: {}
-}
+};
 </script>
 
 <style lang="scss">
@@ -31,9 +38,9 @@ export default {
   margin: 0 auto;
   text-align: center;
   font-size: 1rem;
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
 }
-a{
+a {
   color: #fff;
   text-decoration: none;
 }
@@ -43,16 +50,16 @@ a{
   background: #1269cc;
   text-transform: uppercase;
   // height: 70px;
-  &-brand{
+  &-brand {
     font-size: 2.2rem;
   }
-  .row{
+  .row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
 
-    .add{
+    .add {
       position: absolute;
       top: 41px;
       right: 20px;
@@ -66,9 +73,8 @@ a{
       transition: background 250ms ease;
       outline: none;
       box-shadow: 1px 1px 3px #8f1212;
-      &:hover{
+      &:hover {
         background: #c40808;
-
       }
     }
   }

@@ -4,10 +4,9 @@
       <div class="row">
         <div class="card" v-for="smoothie in smoothies" :key="smoothie.id">
           <a class="delete" @click.prevent="deleteSmoothie(smoothie.id)">x</a>
-          <div class="card-title">{{smoothie.title}}</div>
-
-          <div class="card-body" >
-            <span class="chips" v-for="(ing ,index) in smoothie.ingredients" :key="index">{{ing}}</span>
+          <div class="card-title">{{ smoothie.title }}</div>
+          <div class="card-body">
+            <span class="chips" v-for="(ing, index) in smoothie.ingredients" :key="index">{{ ing }}</span>
           </div>
         </div>
       </div>
@@ -16,33 +15,42 @@
 </template>
 
 <script>
-import db from '@/firebase/init'
+import db from "@/firebase/init";
 export default {
-  name: 'Index',
-  data () {
+  name: "Index",
+  data() {
     return {
       smoothies: []
-    }
+    };
   },
   methods: {
-    deleteSmoothie (id) {
-      this.smoothies = this.smoothies.filter(smoothie => {
-        return smoothie.id !== id
-      })
+    deleteSmoothie(id) {
+      // delete doc from firestore
+      db.collection("smoothies")
+        .doc(id)
+        .delete()
+        .then(() => {
+          // delete from ui
+          this.smoothies = this.smoothies.filter(smoothie => {
+            return smoothie.id !== id;
+          });
+        });
     }
   },
-  created () {
+  created() {
     // fetch data from the firestore
-    db.collection('smoothies').get().then(snapshot => {
-      snapshot.forEach(doc => {
-        const smoothie = doc.data()
-        smoothie.id = doc.id
-        this.smoothies.push(smoothie)
-      })
-    })
+    db.collection("smoothies")
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          const smoothie = doc.data();
+          smoothie.id = doc.id;
+          this.smoothies.push(smoothie);
+        });
+      });
   },
   components: {}
-}
+};
 </script>
 
 <style lang="scss">
