@@ -22,6 +22,11 @@ const routes = [
     path: '/add-smoothie',
     name: 'AddSmoothie',
     component: () => import('../views/AddSmoothie.vue')
+  },
+  {
+    path: '/edit-smoothie/:smoothie_slug',
+    name: 'EditSmoothie',
+    component: () => import('../views/EditSmoothie.vue')
   }
 ]
 

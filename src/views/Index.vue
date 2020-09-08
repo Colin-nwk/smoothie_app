@@ -4,10 +4,16 @@
       <div class="row">
         <div class="card" v-for="smoothie in smoothies" :key="smoothie.id">
           <a class="delete" @click.prevent="deleteSmoothie(smoothie.id)">x</a>
-          <div class="card-title">{{ smoothie.title }}</div>
+          <div class="card-title">{{ smoothie.title }}
+          </div>
           <div class="card-body">
             <span class="chips" v-for="(ing, index) in smoothie.ingredients" :key="index">{{ ing }}</span>
           </div>
+          <span class="edit">
+            <router-link :to="{name: 'EditSmoothie', params: {smoothie_slug: smoothie.slug}}">
+              <a class=" icon">edit</a>
+            </router-link>
+          </span>
         </div>
       </div>
     </main>
@@ -100,6 +106,18 @@ export default {
         color: #857d7d;
         transform: scale(1.2);
       }
+    }
+  }
+  .edit {
+    background: #9090ee;
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 4px;
+    border-radius: 20px;
+    &:hover{
+      background:#3535b9 ;
     }
   }
 }

@@ -1,19 +1,21 @@
 <template>
-  <div class='add-smoothie container'>
-    <h2>Add smoothie</h2>
-    <form @submit.prevent="addSmoothie">
+  <div v-if="smoothie" class="edit-smoothie container">
+    <h2>Edit <span>
+        {{smoothie.title}}
+      </span> Smoothie</h2>
+    <form @submit.prevent="editSmoothie">
       <div class="row">
         <div>
           <label for='title' class="label">Smoothie Title:</label>
         </div>
         <div>
-          <input type='text' name='title' v-model='title' class="input" placeholder="title" />
+          <input type='text' name='title' v-model='smoothie.title' class="input" placeholder="title" />
         </div>
 
-        <div v-for="(ing, index) in ingredients" :key="index">
+        <div v-for="(ing, index) in  smoothie.ingredients" :key="index">
           <label for="added-ingredient" class="label">
             ingredient:</label>
-          <input type="text" name="added-ingredient" v-model="ingredients[index]" class="input">
+          <input type="text" name="added-ingredient" v-model="smoothie.ingredients[index]" class="input">
           <i class="delete" @click="deleteIng(ing)">x</i>
         </div>
         <div>
@@ -23,7 +25,7 @@
           <input type='text' name="add-ingredient" placeholder="ingredients" class="input" @keydown.tab.prevent="addIng" v-model="another" />
         </div>
         <p v-if="feedback" class="alert">{{feedback}}</p>
-        <button class="btn">add smoothie</button>
+        <button class="btn">Update smoothie</button>
       </div>
     </form>
   </div>
@@ -31,33 +33,32 @@
 
 <script>
 import db from "@/firebase/init";
-import slugify from "slugify";
+import slugify from 'slugify'
 export default {
-  name: "AddSmoothie",
+  name: "EditSmoothie",
   data() {
     return {
-      title: null,
+      smoothie: null,
       another: null,
-      ingredients: [],
-      feedback: null,
-      slug: null
+      feedback: null
     };
   },
+
   methods: {
-    addSmoothie() {
-      if (this.title) {
+    editSmoothie() {
+      if (this.smoothie.title) {
         this.feedback = null;
         //create a slug
-        this.slug = slugify(this.title, {
+        this.smoothie.slug = slugify(this.smoothie.title, {
           replacement: "-",
           remove: /[$*_+~.()#'"!\-:@]/g,
           lower: true
         });
-        db.collection("smoothies")
-          .add({
-            title: this.title,
-            ingredients: this.ingredients,
-            slug: this.slug
+        db.collection("smoothies").doc(this.smoothie.id)
+          .update({
+            title: this.smoothie.title,
+            ingredients: this.smoothie.ingredients,
+            slug: this.smoothie.slug
           })
           .then(() => {
             this.$router.push({ name: "Index" });
@@ -71,29 +72,46 @@ export default {
     },
     addIng() {
       if (this.another) {
-        this.ingredients.push(this.another);
+        this.smoothie.ingredients.push(this.another);
         this.another = null;
         this.feedback = null;
       } else {
         this.feedback = "You must enter value to add ingredients";
       }
     },
-    deleteIng(ing){
-      this.ingredients = this.ingredients.filter(ingredient =>{
-        return ingredient !== ing
-      })
+    deleteIng(ing) {
+      this.smoothie.ingredients = this.smoothie.ingredients.filter(
+        ingredient => {
+          return ingredient !== ing;
+        }
+      );
     }
+  },
+   created() {
+    let ref = db
+      .collection("smoothies")
+      .where("slug", "==", this.$route.params.smoothie_slug);
+    ref.get().then(snapshot => {
+      snapshot.forEach(doc => {
+        this.smoothie = doc.data();
+        this.smoothie.id = doc.id;
+      });
+    });
   }
 };
 </script>
 <style lang="scss">
-.add-smoothie {
+span {
+  color: rgb(96, 96, 233);
+  text-transform: uppercase;
+}
+.edit-smoothie {
   margin-top: 6rem;
   color: #857d7d;
   box-sizing: border-box;
   h2 {
     font-size: 2.8rem;
-    color: #1269cc;
+    // color: #1269cc;
     text-transform: uppercase;
   }
   form {
@@ -129,7 +147,7 @@ export default {
         border-bottom: 2px solid green;
       }
     }
-    .delete{
+    .delete {
       color: red;
       cursor: pointer;
       font-size: 1rem;
